@@ -42,7 +42,7 @@ function! s:GetAirlineModeColors()
 endfunction
 
 " Sets the cursor line number to the color for the current mode from Airline
-function! s:SetCursorLineNrColor()
+function! SetCursorLineNrColor()
     call <SID>GetAirlineMode()
     " Only update if the mode has changed
     if s:airline_mode != s:last_airline_mode
@@ -62,11 +62,20 @@ function! s:SetCursorLineNrColor()
 endfunction
 
 " Ensure line number is update every time the status line is updated
-function! s:SetupCursorLineNumber()
-    " Only add to statusline if Airline is loaded
-    if g:loaded_airline == 1
+function! s:LoadLineNumberUpdates()
+    " Only add to statusline if Airline is loaded and it has not been added
+    if g:loaded_airline == 1 && g:airline_section_z !~ 'SetCursorLineNrColor'
         let g:airline_section_z .= '%{SetCursorLineNrColor()}'
     endif
 endfunction
 
-autocmd VimEnter * call <SID>SetupCursorLineNumber()
+" Unload the function for updating the line number
+function! s:UnloadLineNumberUpdates()
+    let g:airline_section_z = substitute(g:airline_section_z, "%{SetCursorLineNrColor()}", "", "g")
+endfunction
+
+" Setup line number updates upon entering a buffer
+autocmd BufWinEnter * call <SID>LoadLineNumberUpdates()
+
+" Ensure the update function is unloaded from inactive buffers
+autocmd BufWinLeave * call <SID>UnloadLineNumberUpdates()
