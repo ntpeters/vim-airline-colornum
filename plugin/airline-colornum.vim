@@ -21,6 +21,8 @@ let s:airline_mode = ''
 let s:last_airline_mode = ''
 " The last Airline theme
 let s:last_airline_theme = ''
+" The last Vim colorscheme
+let s:last_colorscheme = ''
 
 " Gets the current Vim mode as a key compatible with the Airline color map
 function! s:GetAirlineMode()
@@ -65,6 +67,30 @@ function! s:ShouldRedrawCursorLineNum()
     return 0
 endfunction
 
+function! s:ShouldUpdateCursorLineNumColor()
+    if s:airline_mode != s:last_airline_mode ||
+       \ g:airline_theme != s:last_airline_theme ||
+       \ s:last_colorscheme != g:colors_name
+        return 1
+    endif
+    return 0
+endfunction
+
+function! s:CursorSchemeTest()
+            call <SID>GetAirlineMode()
+            " Update cursor line number color
+                let l:mode_colors = <SID>GetAirlineModeColors()
+                if !empty(l:mode_colors)
+                    exec printf('highlight %s %s %s %s %s',
+                            \ 'CursorLineNr',
+                            \ 'guifg='.mode_colors[0],
+                            \ 'guibg='.mode_colors[1],
+                            \ 'ctermfg='.mode_colors[0],
+                            \ 'ctermbg='.mode_colors[1])
+                endif
+    call feedkeys("\<left>\<right>", 'n')
+endfunction
+
 " Sets the cursor line number to the color for the current mode from Airline
 function! SetCursorLineNrColor()
     " Ensure Airline is still enabled. Stop highlight updates if not
@@ -76,8 +102,8 @@ function! SetCursorLineNrColor()
         " Do nothing if plugin is disabled
         if g:airline_colornum_enabled == 1
             call <SID>GetAirlineMode()
-            " Only update if the mode has changed
-            if s:airline_mode != s:last_airline_mode || g:airline_theme != s:last_airline_theme
+            " Update cursor line number color
+            if <SID>ShouldUpdateCursorLineNumColor()
                 let l:mode_colors = <SID>GetAirlineModeColors()
                 if !empty(l:mode_colors)
                     exec printf('highlight %s %s %s %s %s',
@@ -95,6 +121,8 @@ function! SetCursorLineNrColor()
                 let s:last_airline_mode = s:airline_mode
                 " Save last theme
                 let s:last_airline_theme = g:airline_theme
+                " Save last colorscheme
+                let s:last_colorscheme = g:colors_name
             endif
         endif
     endif
@@ -130,6 +158,7 @@ endfunction
 " When Airline is toggled off, restore status line and cursor line to original
 " states
 function! s:AirlineToggledOff()
+    echo "OFF!"
     " Restore original statusline
     let &statusline = s:original_statusline
     " Restore cursor line color and redraw
@@ -168,6 +197,7 @@ function! s:EnableAirlineColorNum()
     let g:airline_colornum_enabled = 1
     " Ensure function has been loaded into the status line whenever entering a buffer
     autocmd BufWinEnter * call <SID>LoadCursorLineNumberUpdates()
+    autocmd ColorScheme * call <SID>CursorSchemeTest()
     " Attempt to load immediately
     call <SID>LoadCursorLineNumberUpdates()
 endfunction
