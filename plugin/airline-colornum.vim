@@ -19,6 +19,8 @@ endif
 let s:airline_mode = ''
 " The previous mode
 let s:last_airline_mode = ''
+" The last Airline theme
+let s:last_airline_theme = ''
 
 " Gets the current Vim mode as a key compatible with the Airline color map
 function! s:GetAirlineMode()
@@ -49,6 +51,20 @@ function! s:GetAirlineModeColors()
     endif
 endfunction
 
+" Determines when a redraw of the line number should occur:
+"   ColorLineNr seems to only redraw on cursor moved events for visual mode?
+"   Force a redraw when toggling Airline back on
+"   Force a redraw when changing Airline theme
+function! s:ShouldRedrawCursorLineNum()
+    if s:airline_mode == 'visual' ||
+       \ s:last_airline_mode == 'visual' ||
+       \ s:last_airline_mode == 'toggledoff' ||
+       \ g:airline_theme != s:last_airline_theme
+        return 1
+    endif
+    return 0
+endfunction
+
 " Sets the cursor line number to the color for the current mode from Airline
 function! SetCursorLineNrColor()
     " Ensure Airline is still enabled. Stop highlight updates if not
@@ -61,7 +77,7 @@ function! SetCursorLineNrColor()
         if g:airline_colornum_enabled == 1
             call <SID>GetAirlineMode()
             " Only update if the mode has changed
-            if s:airline_mode != s:last_airline_mode
+            if s:airline_mode != s:last_airline_mode || g:airline_theme != s:last_airline_theme
                 let l:mode_colors = <SID>GetAirlineModeColors()
                 if !empty(l:mode_colors)
                     exec printf('highlight %s %s %s %s %s',
@@ -71,13 +87,14 @@ function! SetCursorLineNrColor()
                             \ 'ctermfg='.mode_colors[0],
                             \ 'ctermbg='.mode_colors[1])
                 endif
-                " ColorLineNr seems to only redraw on cursor moved events for visual mode?
-                " Also force a redraw when toggling airline back on
-                if s:airline_mode == 'visual' || s:last_airline_mode == 'visual' || s:last_airline_mode == 'toggledoff'
+                " Cause the cursor line num to be redrawn to update color
+                if <SID>ShouldRedrawCursorLineNum()
                     call feedkeys("\<left>\<right>", 'n')
                 endif
                 " Save last mode
                 let s:last_airline_mode = s:airline_mode
+                " Save last theme
+                let s:last_airline_theme = g:airline_theme
             endif
         endif
     endif
