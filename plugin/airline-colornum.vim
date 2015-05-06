@@ -56,7 +56,6 @@ function! SetCursorLineNrColor()
         call <SID>GetAirlineMode()
         " Only update if the mode has changed
         if s:airline_mode != s:last_airline_mode
-            let s:last_airline_mode = s:airline_mode
             let l:mode_colors = <SID>GetAirlineModeColors()
             if !empty(l:mode_colors)
                 exec printf('highlight %s %s %s %s %s',
@@ -65,12 +64,13 @@ function! SetCursorLineNrColor()
                         \ 'guibg='.mode_colors[1],
                         \ 'ctermfg='.mode_colors[0],
                         \ 'ctermbg='.mode_colors[1])
-                " ColorLineNr seems to only redraw on cursor moved events...
-                " Not needed when entering or leaving insert mode
-                if s:airline_mode != 'insert' && s:airline_mode != 'insert'
+                " ColorLineNr seems to only redraw on cursor moved events for visual mode?
+                if s:airline_mode == 'visual' || s:last_airline_mode == 'visual'
                     call feedkeys("\<left>\<right>", 'n')
                 endif
             endif
+            " Save last mode
+            let s:last_airline_mode = s:airline_mode
         endif
     endif
 endfunction
