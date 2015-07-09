@@ -49,9 +49,11 @@ function! s:GetAirlineModeColors()
     " Ensures the current palette has colors for the current mode
     if has_key(g:airline#themes#{g:airline_theme}#palette, s:airline_mode)
         " Fetch colors from the current theme palette
-        let l:mode_fg = g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_z'][2]
-        let l:mode_bg = g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_z'][3]
-        return [l:mode_fg, l:mode_bg]
+        let l:gui_mode_fg = g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_z'][0]
+        let l:gui_mode_bg = g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_z'][1]
+        let l:term_mode_fg = g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_z'][2]
+        let l:term_mode_bg = g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_z'][3]
+        return [l:gui_mode_fg, l:gui_mode_bg, l:term_mode_fg, l:term_mode_bg]
     endif
 endfunction
 
@@ -64,8 +66,8 @@ function! s:SetCursorLineNrColor()
                 \ 'CursorLineNr',
                 \ 'guifg='.mode_colors[0],
                 \ 'guibg='.mode_colors[1],
-                \ 'ctermfg='.mode_colors[0],
-                \ 'ctermbg='.mode_colors[1])
+                \ 'ctermfg='.mode_colors[2],
+                \ 'ctermbg='.mode_colors[3])
     endif
 endfunction
 
