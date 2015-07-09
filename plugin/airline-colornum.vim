@@ -133,7 +133,7 @@ endfunction
 " Ensure line number is update every time the status line is updated
 function! s:LoadCursorLineNrUpdates()
     " Only add to statusline if Airline is loaded and it has not been added
-    if g:loaded_airline == 1
+    if get(g:, 'loaded_airline', 0) == 1
         if exists('g:airline_section_z') && g:airline_section_z !~ 'UpdateCursorLineNr'
             let g:airline_section_z .= '%{UpdateCursorLineNr()}'
             " Force color to update now
