@@ -49,11 +49,7 @@ function! s:GetAirlineModeColors()
     " Ensures the current palette has colors for the current mode
     if has_key(g:airline#themes#{g:airline_theme}#palette, s:airline_mode)
         " Fetch colors from the current theme palette
-        let l:gui_mode_fg = g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_z'][0]
-        let l:gui_mode_bg = g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_z'][1]
-        let l:term_mode_fg = g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_z'][2]
-        let l:term_mode_bg = g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_z'][3]
-        return [l:gui_mode_fg, l:gui_mode_bg, l:term_mode_fg, l:term_mode_bg]
+        return g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_z']
     endif
 endfunction
 
@@ -62,12 +58,19 @@ function! s:SetCursorLineNrColor()
     " Update cursor line number color
     let l:mode_colors = <SID>GetAirlineModeColors()
     if !empty(l:mode_colors)
-        exec printf('highlight %s %s %s %s %s',
+        echom g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_z'][2]
+        let l:resolve_index = [ 'guifg', 'guibg', 'ctermfg', 'ctermbg' ]
+        let l:mode_colors_exec = []
+        for l:i in range(0, 3, 1)
+            if !empty(l:mode_colors[l:i])
+                let l:mode_colors_exec = add(l:mode_colors_exec,
+                    \ l:resolve_index[l:i] . '=' .
+                    \ l:mode_colors[l:i])
+            endif
+        endfor
+        exec printf('highlight %s %s',
                 \ 'CursorLineNr',
-                \ 'guifg='.mode_colors[0],
-                \ 'guibg='.mode_colors[1],
-                \ 'ctermfg='.mode_colors[2],
-                \ 'ctermbg='.mode_colors[3])
+                \ join(l:mode_colors_exec, ' '))
     endif
 endfunction
 
