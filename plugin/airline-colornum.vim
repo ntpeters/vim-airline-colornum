@@ -46,10 +46,25 @@ endfunction
 
 " Gets the statusline colors for the current mode from Airline
 function! s:GetAirlineModeColors()
+    " Fallback value if unable to determine colors. This will reset highlight
+    " to default values
+    let l:fallback = [ 'NONE', 'NONE', 'NONE', 'NONE' ]
+
     " Ensures the current palette has colors for the current mode
     if has_key(g:airline#themes#{g:airline_theme}#palette, s:airline_mode)
         " Fetch colors from the current theme palette
-        return g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_z']
+        "   If 'airline_z' is undefined, fallback to 'airline_a'
+        "   they should be equivalent
+        if has_key(g:airline#themes#{g:airline_theme}#palette[s:airline_mode], 'airline_z')
+            return g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_z']
+        elseif has_key(g:airline#themes#{g:airline_theme}#palette[s:airline_mode], 'airline_a')
+            return g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_a']
+        else
+            " This should never happen as long as airline is loaded...
+            return l:fallback
+        endif
+    else
+        return l:fallback
     endif
 endfunction
 
@@ -58,7 +73,6 @@ function! s:SetCursorLineNrColor()
     " Update cursor line number color
     let l:mode_colors = <SID>GetAirlineModeColors()
     if !empty(l:mode_colors)
-        echom g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_z'][2]
         let l:resolve_index = [ 'guifg', 'guibg', 'ctermfg', 'ctermbg' ]
         let l:mode_colors_exec = []
         for l:i in range(0, 3, 1)
