@@ -61,9 +61,11 @@ function! s:GetAirlineModeColors()
             return g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_a']
         else
             " This should never happen as long as airline is loaded...
+            echom "Error getting colors from airline! - Section key undefined!"
             return l:fallback
         endif
     else
+        echom "Error getting colors from airline! - Mode key undefined!"
         return l:fallback
     endif
 endfunction
