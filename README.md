@@ -43,6 +43,18 @@ This plugin is enabled by default.
    :EnableAirlineColorNum
    ```
    
+##Troubleshooting
+If you are not seeing the highlight in certain modes, make sure your cursorline
+is enabled by adding this to your `.vimrc`:
+```
+set cursorline
+```
+Depending on your theme, this may cause your cursorline to be highlighted.
+If you do not like this behavior, then also add the following to your `.vimrc`:
+```
+hi clear CursorLine
+```
+
 ##Promotion
 If you like this plugin, please star it on Github and vote it up at Vim.org!
 
