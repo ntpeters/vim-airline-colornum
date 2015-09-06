@@ -185,7 +185,7 @@ function! s:AirlineToggledOff()
     let &statusline = s:original_statusline
     " Restore cursor line color and redraw
     call <SID>ResetCursorLineNrColor()
-    call feedkeys("\<left>\<right>", 'n')
+    call feedkeys("\<right>\<left>", 'n')
     " Used to ensure this is re-enabled when Airline is toggled on
     let s:airline_toggled_off = 1
     " Ensures the cursor line number is redrawn correctly
