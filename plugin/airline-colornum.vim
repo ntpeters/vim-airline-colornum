@@ -139,7 +139,7 @@ function! UpdateCursorLineNr()
                 if <SID>ShouldRedrawCursorLineNr()
                     if col('.') == 1
                         call feedkeys("\<right>\<left>", 'n')
-                    else 
+                    else
                         call feedkeys("\<left>\<right>", 'n')
                     endif
                 endif
@@ -226,6 +226,7 @@ function! s:EnableAirlineColorNum()
         au!
         " Ensure function has been loaded into the status line whenever entering a buffer
         autocmd BufWinEnter * call <SID>LoadCursorLineNrUpdates()
+        autocmd ColorScheme * call <SID>SetCursorLineNrColor()
     augroup END
     " Attempt to load immediately
     call <SID>LoadCursorLineNrUpdates()
