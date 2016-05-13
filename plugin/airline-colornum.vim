@@ -153,6 +153,7 @@ function! UpdateCursorLineNr()
             endif
         endif
     endif
+    return ''
 endfunction
 
 " Ensure line number is update every time the status line is updated
