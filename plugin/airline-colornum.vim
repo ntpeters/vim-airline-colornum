@@ -48,7 +48,7 @@ endfunction
 function! s:GetAirlineModeColors()
     " Fallback value if unable to determine colors. This will reset highlight
     " to default values
-    let l:fallback = [ 'NONE', 'NONE', 'NONE', 'NONE' ]
+    let l:mode_colors = [ 'NONE', 'NONE', 'NONE', 'NONE' ]
 
     " Ensures the current palette has colors for the current mode
     if has_key(g:airline#themes#{g:airline_theme}#palette, s:airline_mode)
@@ -56,18 +56,18 @@ function! s:GetAirlineModeColors()
         "   If 'airline_z' is undefined, fallback to 'airline_a'
         "   they should be equivalent
         if has_key(g:airline#themes#{g:airline_theme}#palette[s:airline_mode], 'airline_z')
-            return g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_z']
+            let l:mode_colors = deepcopy(g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_z'])
         elseif has_key(g:airline#themes#{g:airline_theme}#palette[s:airline_mode], 'airline_a')
-            return g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_a']
+            let l:mode_colors = deepcopy(g:airline#themes#{g:airline_theme}#palette[s:airline_mode]['airline_a'])
         else
             " This should never happen as long as airline is loaded...
             echom "Error getting colors from airline! - Section key undefined!"
-            return l:fallback
         endif
     else
         echom "Error getting colors from airline! - Mode key undefined!"
-        return l:fallback
     endif
+
+    return l:mode_colors
 endfunction
 
 " Set the color of the cursor line number
